@@ -1,9 +1,6 @@
 return {
     {
         'nvim-treesitter/nvim-treesitter',
-        dependencies = {
-            'nvim-treesitter/nvim-treesitter-context',
-        },
         build = ':TSUpdate',
         lazy = false,
         branch = "main",
@@ -101,4 +98,14 @@ return {
             )
         end
     },
+    {
+        'nvim-treesitter/nvim-treesitter-context',
+        config = function()
+            require 'utils'.leader_nmap(
+                "C",
+                require 'treesitter-context'.toggle,
+                "toggle [C]ontext"
+            )
+        end
+    }
 }

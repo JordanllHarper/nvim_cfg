@@ -63,9 +63,7 @@ return {
             set("sS", function() builtin.spell_suggest(themes.get_cursor { border = true }) end,
                 "[s]earch [S]pelling")
             set("sk", builtin.keymaps, "[s]earch [k]eymaps")
-            set("sw", builtin.grep_string, "[S]earch [C]onfiguration")
-            set("C", function() builtin.find_files(themes.get_ivy { cwd = "~/.config/nvim/lua" }) end,
-                "[S]earch [C]onfiguration")
+            set("sw", builtin.grep_string, "[S]earch [w]ord")
 
             require 'telescope'.setup(opts)
             require 'telescope'.load_extension 'fzf'
