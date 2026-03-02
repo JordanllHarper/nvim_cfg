@@ -14,7 +14,6 @@ vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 require "options"
-require "autocommands"
 require "commands"
 require "keymaps"
 
@@ -57,6 +56,7 @@ require("lazy").setup {
 }
 
 require 'lsp'.setup_servers()
+require "autocommands"
 
 vim.cmd([[colorscheme vague]])
 leader_nmap("ln", "<Cmd>Lazy<CR>", "[l]azy [n]vim")

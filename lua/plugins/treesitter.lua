@@ -10,7 +10,8 @@ return {
         config = function(_, opts)
             require 'nvim-treesitter'.setup(opts)
             require 'nvim-treesitter'.install({
-                'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash'
+                'c', 'c_sharp', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim',
+                'bash'
             })
         end,
     },

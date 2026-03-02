@@ -1,8 +1,8 @@
 local cmd      = require("utils").custom_buf_user_command
 local batchMap = require('utils').batch_map
-local ts       = require("telescope.builtin")
 local set      = vim.keymap.set
 local del      = vim.keymap.del
+local ts       = require 'telescope.builtin'
 local M        = {}
 
 
@@ -20,16 +20,6 @@ M.setup_servers                                                    = function()
 
     ---@type table<string | table<string, vim.lsp.Config>>
     local global_servers = {
-        {
-            "csharp_ls",
-            {
-                settings = {
-                    csharp = {
-                        applyFormattingOptions = true
-                    }
-                }
-            }
-        },
         {
             "bicep",
             {
