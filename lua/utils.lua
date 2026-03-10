@@ -5,16 +5,18 @@ local M = {}
 ---@param lhs string
 ---@param rhs function | string
 ---@param desc string?
-function M.map(mode, lhs, rhs, desc)
-    vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc, noremap = true })
+---@param buf number? Defaults to all buffers
+function M.map(mode, lhs, rhs, desc, buf)
+    vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc, noremap = true, buffer = buf })
 end
 
 ---Calls M.map but specifies the mode to be normal.
 ---@param lhs string
 ---@param rhs function | string
 ---@param desc string?
-function M.nmap(lhs, rhs, desc)
-    M.map("n", lhs, rhs, desc)
+---@param buf number?
+function M.nmap(lhs, rhs, desc, buf)
+    M.map("n", lhs, rhs, desc, buf)
 end
 
 ---Calls M.map but specifies the mode to be insert.
@@ -38,8 +40,9 @@ end
 ---@param lhs string
 ---@param rhs function | string
 ---@param desc string?
-function M.leader_nmap(lhs, rhs, desc)
-    M.nmap(("<leader>%s"):format(lhs), rhs, desc)
+---@param buf number?
+function M.leader_nmap(lhs, rhs, desc, buf)
+    M.nmap(("<leader>%s"):format(lhs), rhs, desc, buf)
 end
 
 ---Creates a user command for the given buffer.

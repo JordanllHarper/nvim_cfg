@@ -1,13 +1,14 @@
-local cmd      = require("utils").custom_buf_user_command
-local batchMap = require('utils').batch_map
-local set      = vim.keymap.set
-local del      = vim.keymap.del
-local ts       = require 'telescope.builtin'
-local M        = {}
+local cmd                                                          = require("utils").custom_buf_user_command
+local batchMap                                                     = require('utils').batch_map
+local set                                                          = vim.keymap.set
+local del                                                          = vim.keymap.del
+local ts                                                           = require 'telescope.builtin'
 
+local M                                                            = {}
 
 local capabilities                                                 = require("blink-cmp").get_lsp_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
+
 M.setup_servers                                                    = function()
     vim.diagnostic.config({
         severity_sort = true,
@@ -33,6 +34,7 @@ M.setup_servers                                                    = function()
         "ruby_lsp",
         "pyright",
         "ocamllsp",
+
         "rust-analyzer",
         "denols",
         {
