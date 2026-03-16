@@ -90,7 +90,7 @@ local function configure_lsp(bufnr)
     local lspbuf = vim.lsp.buf
 
     local mappings = {
-        { "T",  ts.lsp_type_definitions,                                    "[t]ype Definition" },
+        { "T",  ts.lsp_type_definitions,                                    "[T]ype Definition" },
         { "Q",  vim.lsp.codelens.run,                                       "[Q]ode lense" },
         -- Document
         { "d",  ts.lsp_document_symbols,                                    "[d]ocument Symbols" },
@@ -99,12 +99,12 @@ local function configure_lsp(bufnr)
         { "w",  ts.lsp_workspace_symbols,                                   "[w]ocument Symbols" },
         { "ss", ts.lsp_dynamic_workspace_symbols,                           "[s]earch [s]ymbols" },
         { "h",  function() lspbuf.hover { border = "single" } end,          "[h]over" },
-        { "k",  function() lspbuf.signature_help { border = "single" } end, "Signature [H]elp" },
+        { "k",  function() lspbuf.signature_help { border = "single" } end, "Signature [k]elp (help)" },
         { "rn", lspbuf.rename,                                              "[r]e[n]ame" },
         -- Code actions
         { "c",  lspbuf.code_action,                                         "[c]ode action" },
         -- Hints
-        { "Lt", "<Cmd>ToggleHints<CR>",                                     "[T]oggle hints" },
+        { "Lt", "<Cmd>ToggleHints<CR>",                                     "[L]sp [T]oggle hints" },
     }
 
     batchMap(mappings, buf_leader_nmap)
@@ -154,13 +154,13 @@ local function configure_diagnostic(bufnr)
         diagnostic_jump(1)
     end, "Go to next diagnostic message")
 
-    buf_leader_nmap("e", diagnostic.open_float, "Open [E]rror float")
+    buf_leader_nmap("e", diagnostic.open_float, "[e]rror float")
 
     -- Treesitter
     buf_leader_nmap("sd", function()
         ts.diagnostics()
     end, "[S]earch [D]iagnostics (current buffer)")
-    buf_leader_nmap("sD", ts.diagnostics, "[S]earch [D]iagnostics")
+    buf_leader_nmap("sD", ts.diagnostics, "[s]earch [d]iagnostics")
 end
 
 ---Deletes the default keybindings
