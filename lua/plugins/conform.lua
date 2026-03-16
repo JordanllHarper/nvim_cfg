@@ -4,7 +4,7 @@ return {
         "stevearc/conform.nvim",
         opts = {
             formatters_by_ft = {
-                cs = { "csharpier" },
+                cs = { lsp_format = "fallback" },
                 html = { "deno_fmt" },
                 lua = { "lua-format" },
                 rust = { "rustfmt" },
