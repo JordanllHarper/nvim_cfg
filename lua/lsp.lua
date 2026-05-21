@@ -28,7 +28,7 @@ M.setup_servers                                                    = function()
             }
         },
         "lemminx",
-        "lua_ls",
+        { "lua_ls", { settings = { Lua = { diagnostics = { globals = { "vim" } } } } } },
         "bashls",
         "gopls",
         "ruby_lsp",
