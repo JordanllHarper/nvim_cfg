@@ -27,24 +27,13 @@ local function stop_and_start_cmd(cmd)
         vim.fn.jobstop(curr_id)
         curr_id = nil
     end
-    if not buf or not vim.api.nvim_buf_is_loaded(buf) then
-        win = nil
-        buf = vim.api.nvim_create_buf(true, true)
-        vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "Output:" })
-        vim.api.nvim_buf_set_lines(buf, 1, 1, false, { "=======" })
-    end
-    if not win or not vim.api.nvim_win_is_valid(win) then
-        win = vim.api.nvim_open_win(
-            buf,
-            false,
-            {
-                split = 'right',
-                win = 0
-            }
-        )
-    end
     local append_contents = function(_, data)
-        if data then
+        if data and type(data) == "table" then
+            if not buf or not vim.api.nvim_buf_is_loaded(buf) then
+                buf = vim.api.nvim_create_buf(true, true)
+                vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "Output:" })
+                vim.api.nvim_buf_set_lines(buf, 1, 1, false, { "=======" })
+            end
             vim.api.nvim_buf_set_lines(
                 buf,
                 -1,
@@ -53,6 +42,16 @@ local function stop_and_start_cmd(cmd)
                 data
             )
             local line_count = vim.api.nvim_buf_line_count(buf)
+            if not win or not vim.api.nvim_win_is_valid(win) then
+                win = vim.api.nvim_open_win(
+                    buf,
+                    false,
+                    {
+                        split = 'right',
+                        win = 0
+                    }
+                )
+            end
             vim.api.nvim_win_set_cursor(win, { line_count, 0 })
         end
     end
@@ -60,7 +59,9 @@ local function stop_and_start_cmd(cmd)
         cmd,
         {
             on_stdout = append_contents,
-            on_sterr = append_contents
+            on_stderr = append_contents,
+            on_exit = append_contents,
+            stderr_buffered = true,
         }
     )
 end
