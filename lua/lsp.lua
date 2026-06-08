@@ -175,6 +175,7 @@ local function delete_defaults()
     bufdel("n", "grr")
     bufdel("n", "gri")
     bufdel("n", "grt")
+    bufdel("n", "grx")
     bufdel("i", "<C-S>")
 end
 

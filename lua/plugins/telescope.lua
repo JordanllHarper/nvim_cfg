@@ -14,6 +14,7 @@ return {
         },
         opts = {
             defaults = {
+                path_display = { "filename_first" },
                 winblend = 17,
                 layout_strategy = 'horizontal',
                 layout_config = {

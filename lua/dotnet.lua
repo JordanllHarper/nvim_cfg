@@ -12,6 +12,16 @@ local win = nil
 local buf = nil
 local curr_id = nil
 
+local function set_modifiable(value)
+    vim.api.nvim_set_option_value("modifiable", value, { buf = buf })
+end
+
+local function allow_modifiable(action)
+    set_modifiable(true)
+    action()
+    set_modifiable(false)
+end
+
 function M.setup(opts)
     if opts.run then
         if opts.run.cmd then M.run.cmd = opts.run.cmd end
@@ -31,15 +41,24 @@ local function stop_and_start_cmd(cmd)
         if data and type(data) == "table" then
             if not buf or not vim.api.nvim_buf_is_loaded(buf) then
                 buf = vim.api.nvim_create_buf(true, true)
-                vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "Output:" })
-                vim.api.nvim_buf_set_lines(buf, 1, 1, false, { "=======" })
+                allow_modifiable(
+                    function()
+                        vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "Output:" })
+                        vim.api.nvim_buf_set_lines(buf, 1, 1, false, { "=======" })
+                    end
+                )
             end
-            vim.api.nvim_buf_set_lines(
-                buf,
-                -1,
-                -1,
-                false,
-                data
+
+            allow_modifiable(
+                function()
+                    vim.api.nvim_buf_set_lines(
+                        buf,
+                        -1,
+                        -1,
+                        false,
+                        data
+                    )
+                end
             )
             local line_count = vim.api.nvim_buf_line_count(buf)
             if not win or not vim.api.nvim_win_is_valid(win) then
@@ -47,14 +66,17 @@ local function stop_and_start_cmd(cmd)
                     buf,
                     false,
                     {
-                        split = 'right',
-                        win = 0
+                        split = 'below',
+                        win = -1
                     }
                 )
             end
             vim.api.nvim_win_set_cursor(win, { line_count, 0 })
         end
     end
+
+    M.clean_buffer()
+
     curr_id = vim.fn.jobstart(
         cmd,
         {
@@ -65,6 +87,8 @@ local function stop_and_start_cmd(cmd)
         }
     )
 end
+
+
 
 function M.start()
     if not M.run then
@@ -99,11 +123,15 @@ function M.stop()
 end
 
 function M.clean_buffer()
-    if not buf or not vim.api.nvim_buf_is_loaded(buf) then
-        print("No buffer")
-        return
-    end
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "" })
+    allow_modifiable(
+        function()
+            if not buf or not vim.api.nvim_buf_is_loaded(buf) then
+                print("No buffer")
+                return
+            end
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "" })
+        end
+    )
 end
 
 function M.test()
