@@ -10,16 +10,12 @@ local M = {
 
 local win = nil
 local buf = nil
-local curr_id = nil
+local pid = nil
 
-local function set_modifiable(value)
-    vim.api.nvim_set_option_value("modifiable", value, { buf = buf })
-end
-
-local function allow_modifiable(action)
-    set_modifiable(true)
+local function modify(action)
+    vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
     action()
-    set_modifiable(false)
+    vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 end
 
 function M.setup(opts)
@@ -32,52 +28,55 @@ function M.setup(opts)
     if opts.secrets_cmd then M.secrets_cmd = opts.secrets_cmd end
 end
 
-local function stop_and_start_cmd(cmd)
-    if curr_id then
-        vim.fn.jobstop(curr_id)
-        curr_id = nil
-    end
-    local append_contents = function(_, data)
-        if data and type(data) == "table" then
-            if not buf or not vim.api.nvim_buf_is_loaded(buf) then
-                buf = vim.api.nvim_create_buf(true, true)
-                allow_modifiable(
-                    function()
-                        vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "Output:" })
-                        vim.api.nvim_buf_set_lines(buf, 1, 1, false, { "=======" })
-                    end
-                )
-            end
+local function append_contents(_, data)
+    if not data or type(data) ~= "table" then return end
 
-            allow_modifiable(
-                function()
-                    vim.api.nvim_buf_set_lines(
-                        buf,
-                        -1,
-                        -1,
-                        false,
-                        data
-                    )
-                end
-            )
-            local line_count = vim.api.nvim_buf_line_count(buf)
-            if not win or not vim.api.nvim_win_is_valid(win) then
-                win = vim.api.nvim_open_win(
-                    buf,
-                    false,
-                    {
-                        split = 'below',
-                        win = -1
-                    }
-                )
+    if not buf or not vim.api.nvim_buf_is_loaded(buf) then
+        buf = vim.api.nvim_create_buf(true, true)
+        modify(
+            function()
+                vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "Output:" })
+                vim.api.nvim_buf_set_lines(buf, 1, 1, false, { "=======" })
             end
-            vim.api.nvim_win_set_cursor(win, { line_count, 0 })
+        )
+    end
+    if not win or not vim.api.nvim_win_is_valid(win) then
+        win = vim.api.nvim_open_win(
+            buf,
+            false,
+            {
+                split = 'below',
+                win = -1
+            }
+        )
+    end
+    local before_row_count = vim.api.nvim_buf_line_count(buf)
+    local current_cursor_pos = vim.api.nvim_win_get_cursor(win)
+    local should_scroll = current_cursor_pos[1] == before_row_count
+    modify(
+        function()
+            vim.api.nvim_buf_set_lines(
+                buf,
+                -1,
+                -1,
+                false,
+                data
+            )
         end
+    )
+    local new_row_count = vim.api.nvim_buf_line_count(buf)
+    if should_scroll then vim.api.nvim_win_set_cursor(win, { new_row_count, 0 }) end
+end
+
+local function stop_and_start_cmd(cmd)
+    if pid then
+        vim.fn.jobstop(pid)
+        pid = nil
     end
 
     M.clean_buffer()
 
-    curr_id = vim.fn.jobstart(
+    pid = vim.fn.jobstart(
         cmd,
         {
             on_stdout = append_contents,
@@ -87,8 +86,6 @@ local function stop_and_start_cmd(cmd)
         }
     )
 end
-
-
 
 function M.start()
     if not M.run then
@@ -114,21 +111,18 @@ function M.start()
 end
 
 function M.stop()
-    if curr_id then
-        vim.fn.jobstop(curr_id)
-        curr_id = nil
+    if pid then
+        vim.fn.jobstop(pid)
+        pid = nil
     else
         print("No running job...")
     end
 end
 
 function M.clean_buffer()
-    allow_modifiable(
+    if not buf or not vim.api.nvim_buf_is_loaded(buf) then return end
+    modify(
         function()
-            if not buf or not vim.api.nvim_buf_is_loaded(buf) then
-                print("No buffer")
-                return
-            end
             vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "" })
         end
     )
