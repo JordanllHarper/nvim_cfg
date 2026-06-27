@@ -4,8 +4,12 @@ local M = {
         project = nil,
         env_variables = {}
     },
+    secrets_set_cmd = {
+        cmd = "dotnet user-secrets set",
+        project = nil,
+    },
     test_cmd = "dotnet test",
-    secrets_cmd = "dotnet user-secrets --list",
+    secrets_list_cmd = "dotnet user-secrets --list",
 }
 
 local win = nil
@@ -25,7 +29,7 @@ function M.setup(opts)
         if opts.run.env_variables then M.run.env_variables = opts.run.env_variables end
     end
     if opts.test_cmd then M.test_cmd = opts.test_cmd end
-    if opts.secrets_cmd then M.secrets_cmd = opts.secrets_cmd end
+    if opts.secrets_cmd then M.secrets_set_cmd = opts.secrets_cmd end
 end
 
 local function append_contents(_, data)
@@ -132,8 +136,15 @@ function M.test()
     stop_and_start_cmd(M.test_cmd)
 end
 
+function M.user_secrets_set()
+    vim.ui.input({ prompt = "Enter key value for secrets: " }, function(input)
+        local cmd = string.format("%s --project %s %s", M.secrets_set_cmd.cmd, M.secrets_set_cmd.project, input)
+        stop_and_start_cmd(cmd)
+    end)
+end
+
 function M.user_secrets()
-    stop_and_start_cmd(M.secrets_cmd)
+    stop_and_start_cmd(M.secrets_list_cmd)
 end
 
 return M
