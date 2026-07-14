@@ -10,6 +10,12 @@ local M = {
     },
     test_cmd = "dotnet test",
     secrets_list_cmd = "dotnet user-secrets --list",
+    keymaps = {
+        run = "<leader>Rp",
+        test = "<leader>Rt",
+        stop = "<leader>Rs",
+        clean_buffer = "<leader>Rc"
+    },
 }
 
 local win = nil
@@ -22,14 +28,28 @@ local function modify(action)
     vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 end
 
-function M.setup(opts)
-    if opts.run then
-        if opts.run.cmd then M.run.cmd = opts.run.cmd end
-        if opts.run.project then M.run.project = opts.run.project end
-        if opts.run.env_variables then M.run.env_variables = opts.run.env_variables end
+local function set_keymaps(keymaps)
+    local set = function(keymap, action, desc)
+        vim.keymap.set("n", keymap, action,
+            { silent = true, desc = desc, noremap = true })
     end
-    if opts.test_cmd then M.test_cmd = opts.test_cmd end
-    if opts.secrets_cmd then M.secrets_set_cmd = opts.secrets_cmd end
+    set(keymaps and keymaps.run or M.keymaps.run, M.start, "Run project")
+    set(keymaps and keymaps.test or M.keymaps.test, M.test, "Run test")
+    set(keymaps and keymaps.stop or M.keymaps.stop, M.stop, "Stop project")
+    set(keymaps and keymaps.clean_buffer or M.keymaps.clean_buffer, M.clean_buffer, "Clean buffer")
+end
+
+function M.setup(opts)
+    if opts then
+        if opts.run then
+            if opts.run.cmd then M.run.cmd = opts.run.cmd end
+            if opts.run.project then M.run.project = opts.run.project end
+            if opts.run.env_variables then M.run.env_variables = opts.run.env_variables end
+        end
+        if opts.test_cmd then M.test_cmd = opts.test_cmd end
+        if opts.secrets_cmd then M.secrets_set_cmd = opts.secrets_cmd end
+    end
+    set_keymaps(opts.keymaps)
 end
 
 local function append_contents(_, data)
