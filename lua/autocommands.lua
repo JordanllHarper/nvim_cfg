@@ -30,3 +30,13 @@ nvim_create_autocmd('LspAttach', {
         require('lsp').on_attach(_, buf)
     end
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "html",
+    callback = function()
+        vim.bo.expandtab = true
+        vim.bo.tabstop = 2
+        vim.bo.shiftwidth = 2
+        vim.bo.softtabstop = 2
+    end,
+})

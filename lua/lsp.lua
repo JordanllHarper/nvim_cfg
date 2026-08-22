@@ -34,7 +34,8 @@ M.setup_servers                                                    = function()
         "ruby_lsp",
         "pyright",
         "ocamllsp",
-
+        "ts_ls",
+        "emmet-ls",
         "rust-analyzer",
         "denols",
         {
