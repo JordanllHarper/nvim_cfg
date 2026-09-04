@@ -31,6 +31,15 @@ nvim_create_autocmd('LspAttach', {
     end
 })
 
+nvim_create_autocmd('BufEnter', {
+    pattern = "*.cs",
+    callback = function()
+        vim.o.tabstop = 2
+        vim.o.shiftwidth = 4
+        vim.o.expandtab = false
+    end
+})
+
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "html",
     callback = function()

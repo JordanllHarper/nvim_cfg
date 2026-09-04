@@ -8,7 +8,7 @@ return {
             require 'nvim-treesitter'.setup(opts)
             require 'nvim-treesitter'.install({
                 'c', 'c_sharp', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim',
-                'bash'
+                'bicep', 'bash'
             })
         end,
     },
